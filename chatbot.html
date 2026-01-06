@@ -5,16 +5,17 @@
   </head>
   <body>
     <div class="js-container"></div>
-
     <script src="https://unpkg.com/supersimpledev/react.js"></script>
     <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
-
     <script src="https://unpkg.com/supersimpledev/babel.js"></script>
     <script type="text/babel">
       function ChatInput(){
         return(
           <div>
-            <input type="text" placeholder="Type your message..." />
+            <input 
+              type="text" 
+              placeholder="Type your message..." 
+            />
             <button>Send</button>
           </div>
         );
@@ -32,24 +33,44 @@
         // } else{
           return(
             <div>
-              {sender==="robot" && <img src="./pictures/robot.png" width="50"/> }
+              {sender==="robot" &&
+               (<img src="./pictures/robot.png" width="50"/>) 
+              }
               {message}
-              {sender==="user" && <img src="./pictures/user.png" width="50"/> }
+              {sender==="user" &&
+              ( <img src="./pictures/user.png" width="50"/> )
+            }
             </div>
           );
         // }
       }
-      const app = <div>
-        <ChatInput/>
-        <ChatMessage message="Hello Chatbot" sender="user"/>
-        <ChatMessage message="Hello! How can I help you?" sender="robot"/>
-        <ChatMessage message="Can you get me todays date?" sender="user"/>
-        <ChatMessage message="Sure! Today is June 10, 2024." sender="robot"/>
 
-        </div>
+      function App(){
+        return(
+          <div>
+            <ChatInput/>
+            <ChatMessage 
+              message="Hello Chatbot" 
+              sender="user"
+            />
+            <ChatMessage 
+              message="Hello! How can I help you?" 
+              sender="robot"
+            />
+            <ChatMessage 
+              message="Can you get me todays date?" 
+              sender="user"
+            />
+            <ChatMessage 
+              message="Sure! Today is June 10, 2024." 
+              sender="robot"
+            />
+          </div>
+        );
+      }
 
       const container = document.querySelector('.js-container');
-      ReactDOM.createRoot(container).render(app);
+      ReactDOM.createRoot(container).render(<App/>);
     </script>
   </body>
 </html>
