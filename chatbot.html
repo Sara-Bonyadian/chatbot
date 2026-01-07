@@ -2,6 +2,83 @@
 <html>
   <head>
     <title>Chatbot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+      }
+      .send-button {
+        background-color: rgb(25,135,84);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        margin-left: 10px;
+        border-radius: 10px;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .chat-input {
+      /* padding: 12px 20px; */
+      /* margin: 10px 0; */
+      border: 1px solid #a5a3a3;
+      border-width: 1px;
+      border-radius: 10px;
+      font-size: 15px;
+      flex-grow: 1;
+
+      }
+      .chat-input-container {
+        display: flex;
+        margin-bottom: 60px;
+      }
+
+      .app-container {
+       max-width: 600px;
+       margin-left: auto;
+        margin-right: auto;
+       height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-message-user {
+        display: flex;
+        justify-content: end;
+        align-items: start;
+
+      }
+
+      .chat-message-text {
+        background-color: rgb(238, 238, 238);
+        border-radius: 10px;
+        padding: 15px 20px  ;
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 20px;
+        max-width: 300px;
+        word-wrap: break-word;
+      }
+
+      .chat-message-robot {
+        display: flex;
+        justify-content: start;
+        align-items: start;
+      }
+
+      .chat-message-profile {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+      }
+      .chat-massage-container {
+        flex-grow: 1;
+        margin-top: 20px;
+        overflow-y: scroll;
+
+      }
+    </style>
   </head>
   <body>
     <div class="js-container"></div>
@@ -11,52 +88,52 @@
     <script src="https://unpkg.com/supersimpledev/babel.js"></script>
     <script type="text/babel">
       
-      function ChatInput({ chatMassage, setChatMassage }) {
-  const [inputText, setInputText] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
+    function ChatInput({ chatMassage, setChatMassage }) {
+      const [inputText, setInputText] = React.useState("");
+      const [isLoading, setIsLoading] = React.useState(false);
 
-  function saveInputText(event) {
-    setInputText(event.target.value);
-  }
+      function saveInputText(event) {
+        setInputText(event.target.value);
+      }
 
-  async function sendMessage() {
-    if (isLoading || inputText === "") return;
+      async function sendMessage() {
+        if (isLoading || inputText === "") return;
 
-    setIsLoading(true);
-    const text = inputText;   // keep a copy before clearing
-    setInputText("");
+        setIsLoading(true);
+        const text = inputText;   // keep a copy before clearing
+        setInputText("");
 
-    const newChatMessages = [
-      ...chatMassage,
-      {
-        message: text,
-        sender: "user",
-        id: crypto.randomUUID(),
-      },
-    ];
+        const newChatMessages = [
+         ...chatMassage,
+           {
+           message: text,
+           sender: "user",
+           id: crypto.randomUUID(),
+           },
+        ];
 
-    setChatMassage([
-      ...newChatMessages,
-      { message: "Loading...", sender: "robot", id: crypto.randomUUID() },
-    ]);
+        setChatMassage([
+          ...newChatMessages,
+         { message: "Loading...", sender: "robot", id: crypto.randomUUID() },
+        ]);
 
-    const response = await Chatbot.getResponseAsync(text);
+        const response = await Chatbot.getResponseAsync(text);
 
-    setChatMassage([
-      ...newChatMessages,
-      { message: response, sender: "robot", id: crypto.randomUUID() },
-    ]);
+         setChatMassage([
+         ...newChatMessages,
+         { message: response, sender: "robot", id: crypto.randomUUID() },
+       ]);
 
-    setIsLoading(false);
-  }
+        setIsLoading(false);
+    }
 
-  function handleKeyDown(event) {
-    if (event.key === "Enter") sendMessage();
-    else if (event.key === "Escape") setInputText("");
-  }
+    function handleKeyDown(event) {
+     if (event.key === "Enter") sendMessage();
+     else if (event.key === "Escape") setInputText("");
+    }
 
-  return (
-    <div>
+    return (
+    <div className="chat-input-container">
       <input
         type="text"
         placeholder="Type your message..."
@@ -64,22 +141,31 @@
         onChange={saveInputText}
         onKeyDown={handleKeyDown}
         value={inputText}
+        className="chat-input"
       />
-      <button onClick={sendMessage}>Send</button>
+      <button 
+        onClick={sendMessage}
+        className="send-button">
+        Send</button>
     </div>
   );
 }
 
       function ChatMessage(props){
-        const {message,sender} = props;     
+        const {message,sender} = props;  
           return(
-            <div>
+            <div className={
+              sender==="user"
+              ? "chat-message-user"
+              :"chat-message-robot"}>
               {sender==="robot" &&
-               (<img src="./pictures/robot.png" width="50"/>) 
+               (<img src="./pictures/robot.png" className="chat-message-profile"/>) 
               }
-              {message}
+              <div className="chat-message-text">
+                {message}
+              </div>
               {sender==="user" &&
-              ( <img src="./pictures/user.png" width="50"/> )
+              ( <img src="./pictures/user.png" className="chat-message-profile"/> )
             }
             </div>
           );
@@ -87,8 +173,16 @@
       }
 
       function ChatMassage({chatMassage}){
+          const chatMessageRef = React.useRef(null);
+           React.useEffect(()=>{
+            const contaienerElem=chatMessageRef.current;
+            if(contaienerElem){
+              contaienerElem.scrollTop=contaienerElem.scrollHeight;
+             }},[chatMassage]);
       return(
-        <div>
+        <div 
+        className="chat-massage-container"
+        ref={chatMessageRef}>
           {chatMassage.map((chat)=>(
             <ChatMessage 
               key={chat.id}
@@ -116,13 +210,14 @@
         id:"id4"},
       ]);
         return(
-          <div>
+          <div className="app-container">
+            
+            <ChatMassage
+              chatMassage={chatMassage}
+            />
             <ChatInput
               chatMassage={chatMassage}
               setChatMassage={setChatMassage}
-            />
-            <ChatMassage
-              chatMassage={chatMassage}
             />
           </div>
         );
