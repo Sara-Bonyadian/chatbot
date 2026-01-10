@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import {Chatbot} from 'supersimpledev';
-import LoadingProfileImages from '../assets/loading-spinner.gif'
-export function ChatInput({ chatMessages, setChatMessages }) {
+import LoadingProfileImages from '../assets/loading-spinner.gif';
+import './ChatInput.css'
+import  dayjs from 'dayjs'
+import {Clear} from './Clear'
+
+export function ChatInput({ chatMessages, setChatMessages}) {
         const [inputText, setInputText] = useState("");
         // const [isLoading, setIsLoading] = React.useState(false);
-
+        const time = dayjs().valueOf();
+        const formatedTime =dayjs(time).format('HH:mm')
         function saveInputText(event) {
           setInputText(event.target.value);
         }
@@ -14,6 +19,7 @@ export function ChatInput({ chatMessages, setChatMessages }) {
           // will take some time to load the response. We want
           // to clear the textbox immediately rather waiting
           // for the Chatbot to finish loading.
+          
           setInputText('');
 
           const newChatMessages = [
@@ -21,26 +27,35 @@ export function ChatInput({ chatMessages, setChatMessages }) {
               message: inputText,
               sender: "user",
               id: crypto.randomUUID(),
+              time:formatedTime,
+              isMessageLoading:false
             },
           ];
-          console.log("1", inputText);
+          
+
           
           setChatMessages([
             ...newChatMessages,{ 
               message: <img src={LoadingProfileImages} className="loading-spinner" />, 
               sender: "robot", 
-              id: crypto.randomUUID() 
+              id: crypto.randomUUID(), 
+              time:formatedTime,
+              isMessageLoading:true 
             },
           ]);
 
+          
+
           const response = await Chatbot.getResponseAsync(inputText);
-          console.log("2", response);
+          
 
           setChatMessages([
             ...newChatMessages,{ 
               message: response, 
               sender: "robot", 
-              id: crypto.randomUUID() 
+              id: crypto.randomUUID(),
+              time:formatedTime,
+              isMessageLoading:false 
             },
           ]);
 
@@ -68,6 +83,9 @@ export function ChatInput({ chatMessages, setChatMessages }) {
             >
               Send
             </button>
+           <Clear
+           setChatMessages={setChatMessages}
+           />
           </div>
         );
       }
